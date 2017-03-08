@@ -8,16 +8,14 @@
         <environment id="development">
             <transactionManager type="JDBC"/>
             <dataSource type="POOLED">
-                <property name="driver" value="${petstat.driver}"/>
-                <property name="url" value="${petstat.url}"/>
-                <property name="username" value="${petstat.username}"/>
-                <property name="password" value="${petstat.password}"/>
+                <property name="driver" value="${jdfx.driver}"/>
+                <property name="url" value="${jdfx.url}"/>
+                <property name="username" value="${jdfx.username}"/>
+                <property name="password" value="${jdfx.password}"/>
             </dataSource>
         </environment>
     </environments>
     <mappers>
-        <mapper resource="com/tkylin/xml/AreasMapper.xml"/>
-        <mapper resource="com/tkylin/xml/CitiesMapper.xml"/>
-        <mapper resource="com/tkylin/xml/ProvincesMapper.xml"/>
+        <mapper resource="com/tkylin/jdfx/db/xml/GoodsMapper.xml"/>
     </mappers>
 </configuration>
