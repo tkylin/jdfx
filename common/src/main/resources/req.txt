@@ -1,0 +1,34 @@
+*****************************************General*************************************************
+Remote Address:111.13.29.201:443
+Request URL:https://api.m.jd.com/client.action?functionId=jdDiscoveryFloorWithList&body=%7B%22deviceId%22%3A%2212308120313hjhkasjhdiuweh2341%22%7D&client=wh5&clientVersion=1.0.0&env=&_=1488984771425&callback=jsonp1
+Request Method:GET
+Status Code:200 OK
+*****************************************Response Headers*************************************************
+content-encoding:gzip
+content-type:text/plain;charset=UTF-8
+date:Wed, 08 Mar 2017 14:52:51 GMT
+server:nginx
+status:200
+vary:Accept-Encoding
+*****************************************Request Headers*************************************************
+:authority:api.m.jd.com
+:method:GET
+:path:/client.action?functionId=jdDiscoveryFloorWithList&body=%7B%22deviceId%22%3A%2212308120313hjhkasjhdiuweh2341%22%7D&client=wh5&clientVersion=1.0.0&env=&_=1488984771425&callback=jsonp1
+:scheme:https
+accept:*/*
+accept-encoding:gzip, deflate, sdch
+accept-language:zh-CN,zh;q=0.8
+cookie:abtest=20161209135529474_57; m_uuid_new=B20E27D8F763EFB4C8545B132ECC2AB7; __utmz=122270672.1485007014.1.1.utmcsr=trade.jd.com|utmccn=(referral)|utmcmd=referral|utmcct=/shopping/order/getOrderInfo.action; cn=28; ipLoc-djd=19-1601-50257-52085.137926900; mt_xid=V2_52007VwMSU1xQW1IbTx1sUG5TFFVbWlNGGU4aWBliVxAHQVBRWB1VTAhQZlEUBl4NUAoaeRpdBWEfE1BBWVRLHEsSXwNsAhdiX2hRahtKH1wAYDMSVlw%3D; ipLocation=%u5E7F%u4E1C; areaId=19; TrackID=1jTL-6wi8AnI9_3Oai4ftwSgiw2Yf3BZUxuhQtTJY_BihjJK4B4N2NsNLGPsz-rxCwpQv7lSrO3GEb1g3aeZ7t2bVWZ9JatPRtWRXP1cEzS8; pinId=htydZeTrr30193UeXpVtOteBkcPuPvNc; _tp=ymw1%2FfnmnAWrKs2b8t6%2FIiDVv9LNxdqSu0s%2BOuZM%2BPI%3D; _pst=22946956-38286071; pin=22946956-38286071; disour=1; unpl=V2_ZzNtbUVXRRVwXU5QfEkPDWIKG15LAkUXIFoWVHxMCQBlABsNclRCFXMUR1ZnGFUUZAIZX0FcRxFFCEJkexhdBGYKGltDU3MlRQtGZHwYbAVnAhNVS19HE3E4dl16KWxEP1xIDR0BHlM8OEdkeildNSxtExBCV0IUfQFOUH0dbAVmBBpdRGdA; CCC_SE=ADC_uIHb1vrIAacOB2lBLCLXfdMimaSI0xzXMhBa6paI%2ftv3QD%2bTtKCcxn5t2R71Fu%2bLzeW%2bSgIlujFZ6CM1wvWT%2buEcSGfvlirNUe4S2w7nSPX1z77j5En%2baZR1BvdosjoG1ikNLgTfN%2b5GA5w2ueednCS3Z0GSCEiJb6rOlhYLSpfh6tOGp2HCWZF2cIg3aXX%2fvuubnoY52F81tmj6pbXw7N8p4wWa%2fxxWJwpf0%2fdR11mVJxeHQLPBuOBwAtRNcpqSuF%2fe6oB4Jg%2bJgmcS3f7EPJyOwyiPzW1SokTzotuAavHjFZCXLrtUCqtE1GfSARv5n%2fpmJti3E6nssY8egJ1FwFr2SRSIkv34xVk7p5XOYA85c9neb1P4pjGXEx%2bAqdzlwCjpv6CAMTLm2%2bi79fm31qc59qKDbOJ5xePyr8eQLRqCvtK74q5h6j1xpuWIxBHBobtKEue3fA%2fet5wAi8VFTA9KQQRgB%2bRr80RLsSSp9g0vPxesKiVn4Q7KzNLa37qhoDrncsCqXJjKiA5o22ApA1HNM%2b77IOHXlBcz19tldIUIUhTtfe69E1GQZ8az4%2fgQy58ABqHAYrizxBHohLdTBqgVjwRBIse7HD8xnP9IIkA%3d; __jdv=108460702|kong|t_1000089705_|unionyuanchuang|61714d956ab948828d73dca16dd4328a|1488976467109; mobilev=html5; 3AB9D23F7A4B3C9B=GAG2W62W7OYFNA7R3WKOPP2EVOGZXB2V6LNMV3KI2JSBF75WLLQATFGMPPGFIQORPCRIS3CRWEYDJQIP4PMRE55S3A; USER_FLAG_CHECK=c0a6694d7170b61e0d5a9a60f93d3672; __jda=95931165.1100989575.1479037717.1488982077.1488984631.251; __jdb=95931165.9.1100989575|251.1488984631; __jdc=95931165; mba_muid=1100989575; mba_sid=14889846310709717516982927918.9; __jdu=1100989575; sid=79289fbf8a75f424009c43996461a99a
+referer:https://h5.m.jd.com/active/faxian/list/article-list.html
+user-agent:Mozilla/5.0 (iPhone; CPU iPhone OS 8_0 like Mac OS X) AppleWebKit/600.1.3 (KHTML, like Gecko) Version/8.0 Mobile/12A4345d Safari/600.1.4
+*****************************************Query String Parameters*************************************************
+view source
+view URL encoded
+functionId:jdDiscoveryFloorWithList
+body:{"deviceId":"12308120313hjhkasjhdiuweh2341"}
+client:wh5
+clientVersion:1.0.0
+env:
+_:1488984771425
+callback:jsonp1
+******************************************************************************************
