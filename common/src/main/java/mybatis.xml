@@ -17,5 +17,9 @@
     </environments>
     <mappers>
         <mapper resource="com/tkylin/jdfx/db/xml/GoodsMapper.xml"/>
+        <mapper resource="com/tkylin/jdfx/db/xml/ArticleMapper.xml"/>
+        <mapper resource="com/tkylin/jdfx/db/xml/ArticleTypeMapper.xml"/>
+        <mapper resource="com/tkylin/jdfx/db/xml/AuthorMapper.xml"/>
+        <mapper resource="com/tkylin/jdfx/db/xml/FindMapper.xml"/>
     </mappers>
 </configuration>
