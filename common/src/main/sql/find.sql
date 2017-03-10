@@ -1,0 +1,22 @@
+CREATE TABLE `find` (
+  `find_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `articleId` varchar(200) DEFAULT NULL COMMENT '文章ID',
+  `authorName` varchar(200) DEFAULT NULL COMMENT '作者名称',
+  `authorPic` varchar(300) DEFAULT NULL COMMENT '作者头像',
+  `indexImage` varchar(300) DEFAULT NULL COMMENT '文章主图',
+  `pageView` int(11) DEFAULT NULL COMMENT '文章浏览数',
+  `publishTime` datetime DEFAULT NULL COMMENT '发布时间',
+  `showTime` varchar(100) DEFAULT NULL,
+  `srv` varchar(100) DEFAULT NULL,
+  `summary` varchar(600) DEFAULT NULL COMMENT '摘要',
+  `tagsList` varchar(300) DEFAULT NULL COMMENT '标签json',
+  `testId` varchar(100) DEFAULT NULL,
+  `title` varchar(300) DEFAULT NULL COMMENT '标题',
+  `top` int(11) DEFAULT NULL,
+  `type` varchar(100) DEFAULT NULL COMMENT '文章类型',
+  `videoFlag` int(11) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `status` int(11) DEFAULT NULL COMMENT '状态',
+  PRIMARY KEY (`find_id`)
+)

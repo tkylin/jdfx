@@ -1,0 +1,70 @@
+{
+  "code": "0",
+  "articleType": [
+    {
+      "id": 2,
+      "name": "精选",
+      "testId": "ABTest-10010-BA1-39"
+    },
+    {
+      "id": 21,
+      "name": "京东号",
+      "testId": "ABTest-10010-BA1-39"
+    },
+    {
+      "id": 3,
+      "name": "爱搞机",
+      "testId": "ABTest-10010-BA1-39"
+    },
+    {
+      "id": 20,
+      "name": "家居馆",
+      "testId": "ABTest-10010-BA1-39"
+    },
+    {
+      "id": 7,
+      "name": "文艺咖",
+      "testId": "ABTest-10010-BA1-39"
+    },
+    {
+      "id": 6,
+      "name": "数码控",
+      "testId": "ABTest-10010-BA1-39"
+    },
+    {
+      "id": 19,
+      "name": "吃货党",
+      "testId": "ABTest-10010-BA1-39"
+    },
+    {
+      "id": 5,
+      "name": "型男志",
+      "testId": "ABTest-10010-BA1-39"
+    },
+    {
+      "id": 4,
+      "name": "生活家",
+      "testId": "ABTest-10010-BA1-39"
+    },
+    {
+      "id": 17,
+      "name": "理财师",
+      "testId": "ABTest-10010-BA1-39"
+    },
+    {
+      "id": 15,
+      "name": "品牌街",
+      "testId": "ABTest-10010-BA1-39"
+    },
+    {
+      "id": 9,
+      "name": "女神范",
+      "testId": "ABTest-10010-BA1-39"
+    },
+    {
+      "id": 8,
+      "name": "亲子园",
+      "testId": "ABTest-10010-BA1-39"
+    }
+  ]
+}
