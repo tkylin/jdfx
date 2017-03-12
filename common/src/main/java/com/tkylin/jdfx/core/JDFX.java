@@ -8,11 +8,21 @@ import com.tkylin.jdfx.core.dto.JdfxConfig;
 import com.tkylin.jdfx.db.SessionFactory;
 import com.tkylin.jdfx.db.dao.GoodsMapper;
 import com.tkylin.jdfx.db.model.Goods;
+import com.tkylin.jdfx.db.model.GoodsExample;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.session.SqlSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.reflect.Type;
+import java.net.URL;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by tkyli on 2017/3/8.
@@ -47,33 +57,108 @@ public class JDFX {
         param.addParam("action", "getDiscZdmGoodsList");
         param.addParam("callback", "listCallback");
         param.addParam("type", "goods");
-        param.addParam("tabId", "19");
+
         param.addParam("page", "1");
         param.addParam("_", System.currentTimeMillis() + "");
+        //精选
+        fxHhLoadTab(19);
+        //全球优品
+        fxHhLoadTab(20);
+    }
 
-        String url = config.getFxHhApi() + param.getUrlParams();
+    public static void fxHhLoadTab(int tabId) {
+        JdParam param = new JdParam();
+        param.addParam("app", "Discovergoods");
+        param.addParam("action", "getDiscZdmGoodsList");
+        param.addParam("callback", "listCallback");
+        param.addParam("type", "goods");
+        param.addParam("tabId", "19");
+        param.addParam("page", "1");
+        param.addParam("tabId", String.valueOf(tabId));
+
+        int page = 1;
+        while (page <= 20) {
+            param.addParam("page", String.valueOf(page));
+            param.addParam("_", System.currentTimeMillis() + "");
+
+            String url = config.getFxHhApi() + param.getUrlParams();
+
+            try {
+                fxHhLoadAndSave(url);
+            } catch (InterruptedException e) {
+                logger.error(e.getMessage(), e);
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+                break;
+            }
+
+            page++;
+        }
+
+    }
+
+    public static void fxHhLoadAndSave(String url) throws InterruptedException {
         logger.debug(">>>>>>>>>>>>>>>>>>>>>url:{}", url);
-        HtmlPage page = H5Client.load(url);
-        String content = page.getBody().getFirstChild().getTextContent();
+        HtmlPage result = H5Client.load(url);
+        String content = result.getBody().getFirstChild().getTextContent();
         String json = content.replace("listCallback(", "").replace(");", "");
         logger.debug(">>>>>>>>>>>>>>>>>>>>>json:{}", json);
         FxHhResultDto resultDto = gson.fromJson(json, FxHhResultDto.class);
 
-        GoodsMapper session = SessionFactory.getSession(GoodsMapper.class);
+        SqlSession session = SessionFactory.getSession();
+        GoodsMapper dao = session.getMapper(GoodsMapper.class);
         for (Goods goods : resultDto.getList()) {
             try {
                 goods.setCreateTime(new Date());
                 goods.setStatus(1);
 
-                session.insertSelective(goods);
+                dao.insertSelective(goods);
+
+                //下载图片
+                download("https:" + goods.getGoodsPic(), goods.getSku());
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
             }
         }
+        session.commit();
+        session.close();
+
+        Thread.sleep(200);
     }
 
+    //小文件下载
+    public static void download(String url, String sku) {
+        if (StringUtils.isNotBlank(url)) {
+            try {
+                String imagePath = config.getImageSavePath();
+                StringBuilder img = new StringBuilder(imagePath);
+                img.append(File.separator).append(sku).append(url.substring(url.lastIndexOf(".")));
+                byte[] bytes = IOUtils.toByteArray(new URL(url));
+                OutputStream os = new FileOutputStream(new File(img.toString()));
+                IOUtils.write(bytes, os);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void downloadAll() {
+        SqlSession session = SessionFactory.getSession();
+        GoodsMapper dao = session.getMapper(GoodsMapper.class);
+        GoodsExample exa = new GoodsExample();
+        GoodsExample.Criteria cri = exa.createCriteria();
+        cri.andGoodsIdGreaterThan(1090L);
+        List<Goods> list = dao.selectByExample(exa);
+        for (Goods goods : list) {
+            download("https:" + goods.getGoodsPic(), goods.getSku());
+        }
+    }
+
+
     public static void main(String[] args) {
-        loadFxHhIndex();
+        //loadFxHhIndex();
+
+        downloadAll();
     }
 
 }

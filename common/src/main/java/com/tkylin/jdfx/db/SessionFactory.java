@@ -27,8 +27,7 @@ public class SessionFactory {
         }
     }
 
-    public static <T> T getSession(Class<T> clazz) {
-        SqlSession session = sessionFactory.openSession();
-        return session.getMapper(clazz);
+    public static SqlSession getSession() {
+        return sessionFactory.openSession();
     }
 }
