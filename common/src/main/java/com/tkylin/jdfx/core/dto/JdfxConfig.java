@@ -6,6 +6,7 @@ package com.tkylin.jdfx.core.dto;
 public class JdfxConfig {
     private String fxIndex;
     private String fxHhIndex;
+    private String fxHhDetail;
     private String fxApi;
     private String fxHhApi;
 
@@ -26,6 +27,14 @@ public class JdfxConfig {
 
     public void setFxHhIndex(String fxHhIndex) {
         this.fxHhIndex = fxHhIndex;
+    }
+
+    public String getFxHhDetail() {
+        return fxHhDetail;
+    }
+
+    public void setFxHhDetail(String fxHhDetail) {
+        this.fxHhDetail = fxHhDetail;
     }
 
     public String getFxApi() {

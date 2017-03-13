@@ -2,6 +2,7 @@ package com.tkylin.jdfx.core;
 
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
 import com.jfinal.kit.PropKit;
 import com.tkylin.jdfx.core.dto.FxHhResultDto;
 import com.tkylin.jdfx.core.dto.JdfxConfig;
@@ -21,6 +22,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -45,6 +47,7 @@ public class JDFX {
         config.setFxIndex(PropKit.get("fx.index", ""));
         config.setFxHhApi(PropKit.get("fx.hh.api", ""));
         config.setFxHhIndex(PropKit.get("fx.hh.index", ""));
+        config.setFxHhIndex(PropKit.get("fx.hh.detail", ""));
         config.setImageSavePath(PropKit.get("image.save.path", ""));
         config.setTimeoutMillis(PropKit.getLong("timeout.millis", 60000L));
     }
@@ -64,6 +67,35 @@ public class JDFX {
         fxHhLoadTab(19);
         //全球优品
         fxHhLoadTab(20);
+    }
+
+    public static void loadFxHhDetail(String sku) throws InterruptedException {
+        //https://ai.jd.com/index_new.php?app=Discovergoods&action=getDiscZdmGoodsDetail&callback=detailCallback&id=655949&_=1489385568482
+        JdParam param = new JdParam();
+        param.addParam("app", "Discovergoods");
+        param.addParam("action", "getDiscZdmGoodsDetail");
+        param.addParam("callback", "detailCallback");
+        param.addParam("id", sku);
+        param.addParam("_", System.currentTimeMillis() + "");
+        String url = config.getFxHhApi() + param.getUrlParams();
+        HtmlPage result = H5Client.load(url);
+        String content = result.getBody().getFirstChild().getTextContent();
+        String json = content.replace("detailCallback(", "").replace(");", "");
+        logger.debug(">>>>>>>>>>>>>>>>>>>>>json:{}", json);
+        //JsonObject jsonObject
+        JsonElement element = new JsonParser().parse(json);
+        JsonObject data = element.getAsJsonObject().get("data").getAsJsonObject();
+        JsonArray similarRecommend = data.get("similarRecommend").getAsJsonArray();
+        List<Goods> list = gson.fromJson(similarRecommend, new TypeToken<List<Goods>>() {
+        }.getType());
+
+        List<String> success = save(list);
+        Thread.sleep(200);
+
+        //加载单品相关推荐 这个从测试角度来说可能无效
+        /*for (String succes : success) {
+            loadFxHhDetail(succes);
+        }*/
     }
 
     public static void fxHhLoadTab(int tabId) {
@@ -105,9 +137,20 @@ public class JDFX {
         logger.debug(">>>>>>>>>>>>>>>>>>>>>json:{}", json);
         FxHhResultDto resultDto = gson.fromJson(json, FxHhResultDto.class);
 
+        List<String> list = save(resultDto.getList());
+        for (String sku : list) {
+            //加载单品相关推荐
+            loadFxHhDetail(sku);
+        }
+
+        Thread.sleep(200);
+    }
+
+    public static List<String> save(List<Goods> list) {
         SqlSession session = SessionFactory.getSession();
         GoodsMapper dao = session.getMapper(GoodsMapper.class);
-        for (Goods goods : resultDto.getList()) {
+        List<String> success = new ArrayList<String>();
+        for (Goods goods : list) {
             try {
                 goods.setCreateTime(new Date());
                 goods.setStatus(1);
@@ -116,14 +159,15 @@ public class JDFX {
 
                 //下载图片
                 download("https:" + goods.getGoodsPic(), goods.getSku());
+
+                success.add(goods.getSku());
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
             }
         }
         session.commit();
         session.close();
-
-        Thread.sleep(200);
+        return success;
     }
 
     //小文件下载
@@ -155,10 +199,13 @@ public class JDFX {
     }
 
 
-    public static void main(String[] args) {
-        //loadFxHhIndex();
+    public static void main(String[] args) throws InterruptedException {
+        loadFxHhIndex();
 
-        downloadAll();
+        //downloadAll();
+
+        //test recursive
+        //loadFxHhDetail("3660371");
     }
 
 }
