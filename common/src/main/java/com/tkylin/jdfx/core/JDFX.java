@@ -10,6 +10,7 @@ import com.tkylin.jdfx.db.SessionFactory;
 import com.tkylin.jdfx.db.dao.GoodsMapper;
 import com.tkylin.jdfx.db.model.Goods;
 import com.tkylin.jdfx.db.model.GoodsExample;
+import com.tkylin.jdfx.server.GoodsServer;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.SqlSession;
@@ -54,13 +55,16 @@ public class JDFX {
 
     //解析发现好货首页
     public static void loadFxHhIndex() {
+        //https://ai.jd.com/index_new.php?
+        //app=Discovergoods&action=getDiscZdmGoodsListHead&callback=bannerCallback&_=1490195785950
         //app=Discovergoods&action=getDiscZdmGoodsList&callback=listCallback&type=goods&tabId=19&page=1&_=1489162729422
+        //app=Discovergoods&action=getDiscZdmGoodsList&callback=listCallback&type=goods&tabId=19&page=1&_=1490195786551
         JdParam param = new JdParam();
         param.addParam("app", "Discovergoods");
         param.addParam("action", "getDiscZdmGoodsList");
         param.addParam("callback", "listCallback");
         param.addParam("type", "goods");
-
+        param.addParam("tabId", "");
         param.addParam("page", "1");
         param.addParam("_", System.currentTimeMillis() + "");
         //精选
@@ -70,32 +74,37 @@ public class JDFX {
     }
 
     public static void loadFxHhDetail(String sku) throws InterruptedException {
+        loadFxHhDetail(sku, false, true);
+    }
+
+    public static void loadFxHhDetail(String id, boolean saveDetail, boolean saveSimilarRecommend) throws InterruptedException {
         //https://ai.jd.com/index_new.php?app=Discovergoods&action=getDiscZdmGoodsDetail&callback=detailCallback&id=655949&_=1489385568482
         JdParam param = new JdParam();
         param.addParam("app", "Discovergoods");
         param.addParam("action", "getDiscZdmGoodsDetail");
         param.addParam("callback", "detailCallback");
-        param.addParam("id", sku);
+        param.addParam("id", id);
         param.addParam("_", System.currentTimeMillis() + "");
         String url = config.getFxHhApi() + param.getUrlParams();
-        HtmlPage result = H5Client.load(url);
+        HtmlPage result = H5Client.loadFX(url);
         String content = result.getBody().getFirstChild().getTextContent();
         String json = content.replace("detailCallback(", "").replace(");", "");
         logger.debug(">>>>>>>>>>>>>>>>>>>>>json:{}", json);
         //JsonObject jsonObject
         JsonElement element = new JsonParser().parse(json);
         JsonObject data = element.getAsJsonObject().get("data").getAsJsonObject();
-        JsonArray similarRecommend = data.get("similarRecommend").getAsJsonArray();
-        List<Goods> list = gson.fromJson(similarRecommend, new TypeToken<List<Goods>>() {
-        }.getType());
+        if (saveDetail) {
+            Goods goods = gson.fromJson(data, Goods.class);
+            String success = save(goods);
+        }
+        if (saveSimilarRecommend) {
+            JsonArray similarRecommend = data.get("similarRecommend").getAsJsonArray();
+            List<Goods> list = gson.fromJson(similarRecommend, new TypeToken<List<Goods>>() {
+            }.getType());
 
-        List<String> success = save(list);
+            save(list);
+        }
         Thread.sleep(200);
-
-        //加载单品相关推荐 这个从测试角度来说可能无效
-        /*for (String succes : success) {
-            loadFxHhDetail(succes);
-        }*/
     }
 
     public static void fxHhLoadTab(int tabId) {
@@ -104,9 +113,9 @@ public class JDFX {
         param.addParam("action", "getDiscZdmGoodsList");
         param.addParam("callback", "listCallback");
         param.addParam("type", "goods");
-        param.addParam("tabId", "19");
-        param.addParam("page", "1");
         param.addParam("tabId", String.valueOf(tabId));
+        param.addParam("page", "1");
+        param.addParam("_", System.currentTimeMillis() + "");
 
         int page = 1;
         while (page <= 20) {
@@ -114,7 +123,6 @@ public class JDFX {
             param.addParam("_", System.currentTimeMillis() + "");
 
             String url = config.getFxHhApi() + param.getUrlParams();
-
             try {
                 fxHhLoadAndSave(url);
             } catch (InterruptedException e) {
@@ -131,7 +139,7 @@ public class JDFX {
 
     public static void fxHhLoadAndSave(String url) throws InterruptedException {
         logger.debug(">>>>>>>>>>>>>>>>>>>>>url:{}", url);
-        HtmlPage result = H5Client.load(url);
+        HtmlPage result = H5Client.loadFX(url);
         String content = result.getBody().getFirstChild().getTextContent();
         String json = content.replace("listCallback(", "").replace(");", "");
         logger.debug(">>>>>>>>>>>>>>>>>>>>>json:{}", json);
@@ -147,27 +155,26 @@ public class JDFX {
     }
 
     public static List<String> save(List<Goods> list) {
-        SqlSession session = SessionFactory.getSession();
-        GoodsMapper dao = session.getMapper(GoodsMapper.class);
         List<String> success = new ArrayList<String>();
         for (Goods goods : list) {
-            try {
-                goods.setCreateTime(new Date());
-                goods.setStatus(1);
-
-                dao.insertSelective(goods);
-
+            String str = GoodsServer.insertSelective(goods);
+            if (StringUtils.isNotBlank(str)) {
                 //下载图片
                 download("https:" + goods.getGoodsPic(), goods.getSku());
 
-                success.add(goods.getSku());
-            } catch (Exception e) {
-                logger.error(e.getMessage(), e);
+                success.add(goods.getId());
             }
         }
-        session.commit();
-        session.close();
         return success;
+    }
+
+    public static String save(Goods goods) {
+        String success = GoodsServer.insertSelective(goods);
+        if (StringUtils.isNotBlank(success)) {
+            //下载图片
+            download("https:" + goods.getGoodsPic(), goods.getSku());
+        }
+        return goods.getId();
     }
 
     //小文件下载
@@ -186,12 +193,14 @@ public class JDFX {
         }
     }
 
-    public static void downloadAll() {
+    public static void downloadAll(String createTime) {
         SqlSession session = SessionFactory.getSession();
         GoodsMapper dao = session.getMapper(GoodsMapper.class);
         GoodsExample exa = new GoodsExample();
         GoodsExample.Criteria cri = exa.createCriteria();
-        cri.andGoodsIdGreaterThan(1090L);
+        //cri.andGoodsIdGreaterThan(4098L);
+        //cri.andGoodsIdLessThan(4098L);
+        //cri.andCreateTimeGreaterThanOrEqualTo("");
         List<Goods> list = dao.selectByExample(exa);
         for (Goods goods : list) {
             download("https:" + goods.getGoodsPic(), goods.getSku());
@@ -206,6 +215,10 @@ public class JDFX {
 
         //test recursive
         //loadFxHhDetail("3660371");
+        //String[] skus = new String[]{"672050"};
+        //for (String sku : skus) {
+        //    loadFxHhDetail(sku, true, true);
+        //}
     }
 
 }

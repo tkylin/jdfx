@@ -2,12 +2,13 @@ package com.tkylin.jdfx.core;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Created by tkyli on 2017/3/11.
  */
 public class JdParam {
-    Map<String, String> params = new HashMap<String, String>();
+    Map<String, String> params = new TreeMap<String, String>();
 
     public void addParam(String name, String value) {
         params.put(name, value);
